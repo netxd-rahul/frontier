@@ -6,6 +6,7 @@
 2. Check dependencies: `cargo check -p frontier-template-node --release`
 3. Build Release: `cargo build --release --features=runtime-benchmarks,rpc-binary-search-estimate` <!-- Non functional: `cargo run --release --features runtime-benchmarks -- benchmark pallet --pallet="*" --extrinsic="*"` -->
 4. Run:
+
 ```
 ./target/release/frontier-template-node \
 --dev \
@@ -15,7 +16,9 @@
 --prometheus-external \
 --rpc-cors all
 ```
+
 Or Run with custom accounts pre funded using custom chainSpec.json
+
 ```
 ./target/release/frontier-template-node \
 --alice \
@@ -47,6 +50,7 @@ $ curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method
 ```
 
 ### Pre-funded Development Accounts
+
 - `./target/release/frontier-template-node build-spec --disable-default-bootnode --chain local > customSpec.json`
 
 - Derivation Mneumonic for below addresses: `bottom drive obey lake curtain smoke basket hold race lonely fit walk`
@@ -99,6 +103,7 @@ Private Key: 0x99b3c12287537e38c90a9219d4cb074a89a16e9cdb20bf85728ebd97c343e342
 ```
 
 - Add Predefined Accounts with Balance in customSpec.json
+
 ```
 [
 "0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac",
@@ -117,9 +122,11 @@ Private Key: 0x99b3c12287537e38c90a9219d4cb074a89a16e9cdb20bf85728ebd97c343e342
 1152921504606846976
 ],
 ```
+
 - `./target/release/frontier-template-node build-spec --chain=customSpec.json --raw --disable-default-bootnode > customSpecRaw.json`
 
 ### Fix - Downgrade Rust Toolchain
+
 ```
 rustup install 1.68.0
 rustup default 1.68.0
@@ -128,3 +135,325 @@ rustup toolchain install nightly-2023-01-30
 rustup target add wasm32-unknown-unknown --toolchain nightly-2023-01-30
 rustup override set nightly-2023-01-30
 ```
+
+## Next: Setting up Multi Node environment
+
+Steps Involved:
+
+1. Purge Existing Chains, if you want to upgrade the chain, purging is not necessary.
+2. Generate AURA and GRANDPA Keys
+3. Update Custom Chain Specification accordingly with updated keys # In current repository, we've already pushed an updated chainSpec.json | To generate: `./target/release/frontier-template-node build-spec --disable-default-bootnode --chain local > customSpec.json` then `./target/release/frontier-template-node build-spec --chain=customSpec.json --raw --disable-default-bootnode > customSpecRaw.json`
+4. Spin Nodes
+
+- Node 01: 54.166.168.169
+- Node 02: 54.159.243.174
+- Node 03: 3.94.204.252
+
+### Purge Any Existing Chain, if any:
+
+`./target/release/frontier-template-node purge-chain --base-path /tmp/alice --chain local`
+
+### Steps to generate a Key 1
+
+1. Generate Key for Aura (--scheme Sr25519): `./target/release/frontier-template-node key generate --scheme Sr25519 --password-interactive`
+
+- Add Random Key password: `12345678`
+- Generated Aura Key should look like this below:
+
+```
+Secret phrase:       very museum phone decade snack design lock throw brother fly dwarf great
+  Network ID:        substrate
+  Secret seed:       0xbe9f179926a539cd0e27400f09b3f902826e30d9ef64e0675682c81a4344c616
+  Public key (hex):  0x00fb3eb89b326db889521f202fd81e20ba85e755c03ce02b6649c1d1cf15aa6d
+  Account ID:        0x00fb3eb89b326db889521f202fd81e20ba85e755c03ce02b6649c1d1cf15aa6d
+  Public key (SS58): 5C5zVX5WH5PoHAPR27xus3CvvUVo6egT1VRs2NGZMYRe2o2s
+  SS58 Address:      5C5zVX5WH5PoHAPR27xus3CvvUVo6egT1VRs2NGZMYRe2o2s
+```
+
+2. Generate Key for Grandpa (--scheme Ed25519): `./target/release/frontier-template-node key inspect --password-interactive --scheme Ed25519 "very museum phone decade snack design lock throw brother fly dwarf great"`
+
+- Add Random Key password: `12345678`
+- Generated Grandpa Key should look like this below:
+
+```
+Secret phrase:       very museum phone decade snack design lock throw brother fly dwarf great
+  Network ID:        substrate
+  Secret seed:       0xbe9f179926a539cd0e27400f09b3f902826e30d9ef64e0675682c81a4344c616
+  Public key (hex):  0xf434ac5bff2bd59b76b11f3e408d9019c1fe8aaaced3224ff45fd2969f427c01
+  Account ID:        0xf434ac5bff2bd59b76b11f3e408d9019c1fe8aaaced3224ff45fd2969f427c01
+  Public key (SS58): 5HauBsZXjaRfBDmotWorrEh15W2mGB7c33H7o7mHdCfZGvDf
+  SS58 Address:      5HauBsZXjaRfBDmotWorrEh15W2mGB7c33H7o7mHdCfZGvDf
+```
+
+### Steps to generate a Key 2
+
+1. Generate Key for Aura (--scheme Sr25519): `./target/release/frontier-template-node key generate --scheme Sr25519 --password-interactive`
+
+- Add Random Key password: `12345678`
+- Generated Aura Key should look like this below:
+
+```
+Secret phrase:       tide front tattoo nerve kingdom resist organ recipe chicken chimney area then
+  Network ID:        substrate
+  Secret seed:       0x1d78c2e3243ba2a497dabf1febc9f8a3e60527b5f3857e438864fca4cd568727
+  Public key (hex):  0x5c6bc578b45d3c3ff32b2abb7ec5f6e568526ac04a574e87fd795464fe17b104
+  Account ID:        0x5c6bc578b45d3c3ff32b2abb7ec5f6e568526ac04a574e87fd795464fe17b104
+  Public key (SS58): 5E9tH3DfTK4ocWWvM87N54c3wDzGdh496cRgFAenKvWzrHzz
+  SS58 Address:      5E9tH3DfTK4ocWWvM87N54c3wDzGdh496cRgFAenKvWzrHzz
+```
+
+2. Generate Key for Grandpa (--scheme Ed25519): `./target/release/frontier-template-node key inspect --password-interactive --scheme Ed25519 "tide front tattoo nerve kingdom resist organ recipe chicken chimney area then"`
+
+- Add Random Key password: `12345678`
+- Generated Grandpa Key should look like this below:
+
+```
+Secret phrase:       tide front tattoo nerve kingdom resist organ recipe chicken chimney area then
+  Network ID:        substrate
+  Secret seed:       0x1d78c2e3243ba2a497dabf1febc9f8a3e60527b5f3857e438864fca4cd568727
+  Public key (hex):  0xb5be7c5872c6e3f45d0f954a614ccc192e886ec6d6697704fb47a4ff18ec0165
+  Account ID:        0xb5be7c5872c6e3f45d0f954a614ccc192e886ec6d6697704fb47a4ff18ec0165
+  Public key (SS58): 5GB17MYVuVxtirTXerTR6QCvQaVBkes6cgQRUgJWywY4uVhP
+  SS58 Address:      5GB17MYVuVxtirTXerTR6QCvQaVBkes6cgQRUgJWywY4uVhP
+```
+
+### Steps to generate a Key 3
+
+1. Generate Key for Aura (--scheme Sr25519): `./target/release/frontier-template-node key generate --scheme Sr25519 --password-interactive`
+
+- Add Random Key password: `12345678`
+- Generated Aura Key should look like this below:
+
+```
+Secret phrase:       taste seek proof milk scene trumpet account run toilet absorb elegant bullet
+  Network ID:        substrate
+  Secret seed:       0x44cbfbce4393330fc1da26adf96dc9d54b62aaeba4749925e1e8d43dcf7c5c2f
+  Public key (hex):  0x445de49b6c60338c106c2030664dd688b34d6716a00603ebbca12b8560269e2d
+  Account ID:        0x445de49b6c60338c106c2030664dd688b34d6716a00603ebbca12b8560269e2d
+  Public key (SS58): 5DcM1GJgqKnDKR9kRSDWrdm5Dd6rPDCvuHjcKyasWskiKvRa
+  SS58 Address:      5DcM1GJgqKnDKR9kRSDWrdm5Dd6rPDCvuHjcKyasWskiKvRa
+```
+
+2. Generate Key for Grandpa (--scheme Ed25519): `./target/release/frontier-template-node key inspect --password-interactive --scheme Ed25519 "taste seek proof milk scene trumpet account run toilet absorb elegant bullet"`
+
+- Add Random Key password: `12345678`
+- Generated Grandpa Key should look like this below:
+
+```
+Secret phrase:       taste seek proof milk scene trumpet account run toilet absorb elegant bullet
+  Network ID:        substrate
+  Secret seed:       0x44cbfbce4393330fc1da26adf96dc9d54b62aaeba4749925e1e8d43dcf7c5c2f
+  Public key (hex):  0x8619203fea5cead62be3c7cba701ccc3d7bf4a932c093bfa84e8ea67f7ef6845
+  Account ID:        0x8619203fea5cead62be3c7cba701ccc3d7bf4a932c093bfa84e8ea67f7ef6845
+  Public key (SS58): 5F6XjjpkuyxUnUH3W45VQM6rgo4BcrBrJAi3uwjQCHFFWRCK
+  SS58 Address:      5F6XjjpkuyxUnUH3W45VQM6rgo4BcrBrJAi3uwjQCHFFWRCK
+```
+
+### Aura Node Addresses
+
+- Node 1: 5C5zVX5WH5PoHAPR27xus3CvvUVo6egT1VRs2NGZMYRe2o2s
+- Node 2: 5E9tH3DfTK4ocWWvM87N54c3wDzGdh496cRgFAenKvWzrHzz
+- Node 3: 5DcM1GJgqKnDKR9kRSDWrdm5Dd6rPDCvuHjcKyasWskiKvRa
+
+### Grandpa Node Addresses
+
+- Node 1: 5HauBsZXjaRfBDmotWorrEh15W2mGB7c33H7o7mHdCfZGvDf
+- Node 2: 5GB17MYVuVxtirTXerTR6QCvQaVBkes6cgQRUgJWywY4uVhP
+- Node 3: 5F6XjjpkuyxUnUH3W45VQM6rgo4BcrBrJAi3uwjQCHFFWRCK
+
+### Notes
+
+- Below we'll be spinning 3 nodes on 3 different machines, therefore, we'll be using same PORT WSPORT & RPCPORT across all 3 nodes. In case we need to run 3 instances on same machine, do change ports accordingly.
+
+### Spin Node 1:
+
+- With Built-in Account: ALICE
+  ```
+  ./target/release/frontier-template-node \
+  --base-path /tmp/alice \
+  --chain local \
+  --alice \
+  --port 30333 \
+  --ws-port 9945 \
+  --rpc-port 9933 \
+  --node-key 0000000000000000000000000000000000000000000000000000000000000001 \
+  --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
+  --validator
+  ```
+- With Custom Account using Custom Chain Specification
+
+  ```
+  ./target/release/frontier-template-node \
+  --base-path /tmp/node01 \
+  --chain ./customSpecRaw.json \
+  --port 30333 \
+  --ws-port 9945 \
+  --rpc-port 9933 \
+  --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
+  --validator \
+  --rpc-methods Unsafe \
+  --name Node01 \
+  --password-interactive \
+  --rpc-cors all \
+  --unsafe-rpc-external \
+  --unsafe-ws-external \
+  --prometheus-external \
+  --state-pruning archive-canonical \
+  --blocks-pruning archive-canonical \
+  --ws-max-connections 20000 \
+  --rpc-max-subscriptions-per-connection 10240 
+  ```
+
+  - Node Identity: 12D3KooWGSn5xc1w7p7f3EdKxL5MWwigpXD5WLS9Dibo9hAcJswq
+  - Add keys to the keystore; aura authority keys to enable block production; grandpa authority keys to enable block finalization.
+
+  ```
+  ./target/release/frontier-template-node key insert --base-path /tmp/node01 \
+    --chain customSpecRaw.json \
+    --scheme Sr25519 \
+    --suri "very museum phone decade snack design lock throw brother fly dwarf great" \
+    --password-interactive \
+    --key-type aura
+
+  ./target/release/frontier-template-node key insert \
+    --base-path /tmp/node01 \
+    --chain customSpecRaw.json \
+    --scheme Ed25519 \
+    --suri "very museum phone decade snack design lock throw brother fly dwarf great" \
+    --password-interactive \
+    --key-type gran
+  ```
+
+  - Verify that your keys are in the keystore for node: `ls /tmp/node01/chains/local_testnet/keystore`
+  - close (ctrl+c) and Restart the chain referring "With Custom Account using Custom Chain Specification"
+
+### Spin Node 2:
+
+- With Built-in Account: BOB
+  ```
+  ./target/release/frontier-template-node \
+  --base-path /tmp/bob \
+  --chain local \
+  --bob \
+  --port 30333 \
+  --ws-port 9945 \
+  --rpc-port 9933 \
+  --node-key 0000000000000000000000000000000000000000000000000000000000000001 \
+  --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
+  --validator
+  ```
+- With Custom Account using Custom Chain Specification
+
+  ```
+  ./target/release/frontier-template-node \
+  --base-path /tmp/node02 \
+  --chain ./customSpecRaw.json \
+  --port 30333 \
+  --ws-port 9945 \
+  --rpc-port 9933 \
+  --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
+  --validator \
+  --rpc-methods Unsafe \
+  --name Node02 \
+  --password-interactive \
+  --rpc-cors all \
+  --unsafe-rpc-external \
+  --unsafe-ws-external \
+  --prometheus-external \
+  --state-pruning archive-canonical \
+  --blocks-pruning archive-canonical \
+  --ws-max-connections 20000 \
+  --rpc-max-subscriptions-per-connection 10240 \
+  --bootnodes /ip4/54.166.168.169/tcp/30333/p2p/12D3KooWGSn5xc1w7p7f3EdKxL5MWwigpXD5WLS9Dibo9hAcJswq
+  ```
+
+  - Node Identity: 12D3KooWMTZY6rmcfe5a9QeyJ1Ej34UbWQZ2wAf3UnMdASg9WDkA
+  - Add keys to the keystore; aura authority keys to enable block production; grandpa authority keys to enable block finalization.
+
+  ```
+  ./target/release/frontier-template-node key insert --base-path /tmp/node02 \
+    --chain customSpecRaw.json \
+    --scheme Sr25519 \
+    --suri "tide front tattoo nerve kingdom resist organ recipe chicken chimney area then" \
+    --password-interactive \
+    --key-type aura
+
+  ./target/release/frontier-template-node key insert \
+    --base-path /tmp/node02 \
+    --chain customSpecRaw.json \
+    --scheme Ed25519 \
+    --suri "tide front tattoo nerve kingdom resist organ recipe chicken chimney area then" \
+    --password-interactive \
+    --key-type gran
+  ```
+
+  - Verify that your keys are in the keystore for node: `ls /tmp/node02/chains/local_testnet/keystore`
+  - close (ctrl+c) and Restart the chain referring "With Custom Account using Custom Chain Specification"
+
+### Spin Node 3:
+
+- With Built-in Account: CHARLIE
+  ```
+  ./target/release/frontier-template-node \
+  --base-path /tmp/charlie \
+  --chain local \
+  --charlie \
+  --port 30333 \
+  --ws-port 9945 \
+  --rpc-port 9933 \
+  --node-key 0000000000000000000000000000000000000000000000000000000000000001 \
+  --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
+  --validator
+  ```
+- With Custom Account using Custom Chain Specification
+  ```
+    ./target/release/frontier-template-node \
+  --base-path /tmp/node03 \
+  --chain ./customSpecRaw.json \
+  --port 30333 \
+  --ws-port 9945 \
+  --rpc-port 9933 \
+  --telemetry-url "wss://telemetry.polkadot.io/submit/ 0" \
+  --validator \
+  --rpc-methods Unsafe \
+  --name Node03 \
+  --password-interactive \
+  --rpc-cors all \
+  --unsafe-rpc-external \
+  --unsafe-ws-external \
+  --prometheus-external \
+  --state-pruning archive-canonical \
+  --blocks-pruning archive-canonical \
+  --ws-max-connections 20000 \
+  --rpc-max-subscriptions-per-connection 10240 \
+  --bootnodes /ip4/54.166.168.169/tcp/30333/p2p/12D3KooWGSn5xc1w7p7f3EdKxL5MWwigpXD5WLS9Dibo9hAcJswq
+  ```
+
+  - Node Identity: 12D3KooWRm3N6AAUMHPQXjLVmFWAM9SWAX6uzGSpKYpabwwyU5bw
+  - Add keys to the keystore; aura authority keys to enable block production; grandpa authority keys to enable block finalization.
+
+  ```
+  ./target/release/frontier-template-node key insert --base-path /tmp/node03 \
+    --chain customSpecRaw.json \
+    --scheme Sr25519 \
+    --suri "taste seek proof milk scene trumpet account run toilet absorb elegant bullet" \
+    --password-interactive \
+    --key-type aura
+
+  ./target/release/frontier-template-node key insert \
+    --base-path /tmp/node03 \
+    --chain customSpecRaw.json \
+    --scheme Ed25519 \
+    --suri "taste seek proof milk scene trumpet account run toilet absorb elegant bullet" \
+    --password-interactive \
+    --key-type gran
+  ```
+
+  - Verify that your keys are in the keystore for node: `ls /tmp/node03/chains/local_testnet/keystore`
+  - close (ctrl+c) and Restart the chain referring "With Custom Account using Custom Chain Specification"
+
+### Notes
+
+- you should see the same genesis block and state root hashes.
+- state root hash: 0x2dd7046e55d09c05af2c4126f3a5715f2d5fa808a553548bab5a1a97f4babb02
+- Genesis block/state (state: 0x2dd7046e55d09c05af2c4126f3a5715f2d5fa808a553548bab5a1a97f4babb02, header-hash: 0x2dd7…bb02)

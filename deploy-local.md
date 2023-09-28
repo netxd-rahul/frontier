@@ -3,9 +3,10 @@
 ### Deploy Node on Local Machine
 
 1. `git clone https://github.com/netxd-rahul/frontier/`
-2. Check dependencies: `cargo check -p frontier-template-node --release`
-3. Build Release: `cargo build --release --features=runtime-benchmarks,rpc-binary-search-estimate` <!-- Non functional: `cargo run --release --features runtime-benchmarks -- benchmark pallet --pallet="*" --extrinsic="*"` -->
-4. Run:
+2. `git checkout rustup1.68.0`
+3. Check dependencies: `cargo check -p frontier-template-node --release`
+4. Build Release: `cargo build --release --features=runtime-benchmarks,rpc-binary-search-estimate` <!-- Non functional: `cargo run --release --features runtime-benchmarks -- benchmark pallet --pallet="*" --extrinsic="*"` -->
+5. Run:
 
 ```
 ./target/release/frontier-template-node \
@@ -139,12 +140,18 @@ rustup override set nightly-2023-01-30
 ## Next: Setting up Multi Node environment
 
 Steps Involved:
-
+```
+cd /home/ssm-user/
+git clone https://github.com/netxd-rahul/frontier.git
+cd frontier
+git checkout rustup1.68.0
+export PATH="$HOME/.cargo/bin:$PATH"
+cargo build --release --features=runtime-benchmarks,rpc-binary-search-estimate
+```
 1. Purge Existing Chains, if you want to upgrade the chain, purging is not necessary.
 2. Generate AURA and GRANDPA Keys
 3. Update Custom Chain Specification accordingly with updated keys # In current repository, we've already pushed an updated chainSpec.json | To generate: `./target/release/frontier-template-node build-spec --disable-default-bootnode --chain local > customSpec.json` then `./target/release/frontier-template-node build-spec --chain=customSpec.json --raw --disable-default-bootnode > customSpecRaw.json`
 4. Spin Nodes
-
 - Node 01: 54.166.168.169
 - Node 02: 54.159.243.174
 - Node 03: 3.94.204.252
@@ -304,7 +311,7 @@ Secret phrase:       taste seek proof milk scene trumpet account run toilet abso
   --rpc-max-subscriptions-per-connection 10240 
   ```
 
-  - Node Identity: 12D3KooWGSn5xc1w7p7f3EdKxL5MWwigpXD5WLS9Dibo9hAcJswq
+  - Node Identity: 12D3KooWQ8hmZuZP339ge88udt1DUGuYFoUezFtU9Hme3R2efNKF
   - Add keys to the keystore; aura authority keys to enable block production; grandpa authority keys to enable block finalization.
 
   ```
@@ -364,10 +371,10 @@ Secret phrase:       taste seek proof milk scene trumpet account run toilet abso
   --blocks-pruning archive-canonical \
   --ws-max-connections 20000 \
   --rpc-max-subscriptions-per-connection 10240 \
-  --bootnodes /ip4/54.166.168.169/tcp/30333/p2p/12D3KooWGSn5xc1w7p7f3EdKxL5MWwigpXD5WLS9Dibo9hAcJswq
+  --bootnodes /ip4/54.166.168.169/tcp/30333/p2p/12D3KooWQ8hmZuZP339ge88udt1DUGuYFoUezFtU9Hme3R2efNKF
   ```
 
-  - Node Identity: 12D3KooWMTZY6rmcfe5a9QeyJ1Ej34UbWQZ2wAf3UnMdASg9WDkA
+  - Node Identity: 12D3KooWQEj3TyTY3c2DPiPZz8g2v81e6ySdaafjVBNhMQJ5kqJ6
   - Add keys to the keystore; aura authority keys to enable block production; grandpa authority keys to enable block finalization.
 
   ```
@@ -407,7 +414,7 @@ Secret phrase:       taste seek proof milk scene trumpet account run toilet abso
   ```
 - With Custom Account using Custom Chain Specification
   ```
-    ./target/release/frontier-template-node \
+  ./target/release/frontier-template-node \
   --base-path /tmp/node03 \
   --chain ./customSpecRaw.json \
   --port 30333 \
@@ -426,10 +433,10 @@ Secret phrase:       taste seek proof milk scene trumpet account run toilet abso
   --blocks-pruning archive-canonical \
   --ws-max-connections 20000 \
   --rpc-max-subscriptions-per-connection 10240 \
-  --bootnodes /ip4/54.166.168.169/tcp/30333/p2p/12D3KooWGSn5xc1w7p7f3EdKxL5MWwigpXD5WLS9Dibo9hAcJswq
+  --bootnodes /ip4/54.166.168.169/tcp/30333/p2p/12D3KooWQ8hmZuZP339ge88udt1DUGuYFoUezFtU9Hme3R2efNKF
   ```
 
-  - Node Identity: 12D3KooWRm3N6AAUMHPQXjLVmFWAM9SWAX6uzGSpKYpabwwyU5bw
+  - Node Identity: 12D3KooWCFNC8DaTqjS94fF9gCuSvfQgKKSE8i6fgcAQgc2KXfCg
   - Add keys to the keystore; aura authority keys to enable block production; grandpa authority keys to enable block finalization.
 
   ```
